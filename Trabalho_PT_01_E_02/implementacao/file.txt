@@ -1,0 +1,10 @@
+// Programa de teste para o analisador léxico
+
+if x == 10 {
+    y = x + 2;
+    msg = "Olá mundo";
+    total = y * 5;
+    /* comentário de bloco
+       que ocupa várias linhas */
+    return total;
+}
