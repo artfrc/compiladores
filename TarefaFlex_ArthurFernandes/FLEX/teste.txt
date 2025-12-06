@@ -1,0 +1,11 @@
+repeat
+    contador = contador + 1
+    if contador == 5 then
+        resultado = resultado * 3.14
+    else
+        resultado = resultado + 2.5
+until contador >= 10
+
+while (x < 100) and (y > 0) do
+    x = x * 2
+    y = y / 2
