@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-#define LEN_BUFFER 10
+#define LEN_BUFFER 20  
+#define HALF_BUFFER 10 
 
 string code;
 int globalIndex = 0;
@@ -100,14 +101,26 @@ void printSymbolTable() {
 }
 
 void fillBuffer(char* buffer, int startPos) {
-    for (int i = 0; i < LEN_BUFFER - 1; i++) {
+    for (int i = 0; i < LEN_BUFFER; i++) {
         if (startPos + i < code.length()) {
             buffer[i] = code[startPos + i];
         } else {
             buffer[i] = '\0';
         }
     }
-    buffer[LEN_BUFFER - 1] = '\0';
+}
+
+void fillHalfBuffer(char* buffer, int halfNumber, int startPos) {
+    // halfNumber: 0 = primeira metade, 1 = segunda metade
+    int startIndex = halfNumber * HALF_BUFFER;
+    
+    for (int i = 0; i < HALF_BUFFER; i++) {
+        if (startPos + i < code.length()) {
+            buffer[startIndex + i] = code[startPos + i];
+        } else {
+            buffer[startIndex + i] = '\0';
+        }
+    }
 }
 
 char getNextChar(char* bufferOne, char* bufferTwo, int& bufferPos, bool& usingBufferOne) {
@@ -126,9 +139,14 @@ char getNextChar(char* bufferOne, char* bufferTwo, int& bufferPos, bool& usingBu
     bufferPos++;
     globalIndex++;
     
-    if (bufferPos >= LEN_BUFFER - 1) {
-        char* bufferToFill = usingBufferOne ? bufferTwo : bufferOne;
-        fillBuffer(bufferToFill, globalIndex);
+    if (bufferPos == HALF_BUFFER) {
+        char* otherBuffer = usingBufferOne ? bufferTwo : bufferOne;
+        fillHalfBuffer(otherBuffer, 1, globalIndex);
+    }
+    else if (bufferPos >= LEN_BUFFER) {
+        char* otherBuffer = usingBufferOne ? bufferTwo : bufferOne;
+        fillHalfBuffer(otherBuffer, 0, globalIndex);
+        
         bufferPos = 0;
         usingBufferOne = !usingBufferOne;
     }
@@ -573,7 +591,6 @@ bool diagramCharLiteral(char* buffer1, char* buffer2, int& bufferPos, bool& usin
 
 char* initializeBuffer() {
     char* buffer = new char[LEN_BUFFER]();
-    buffer[LEN_BUFFER - 1] = '\0';
     return buffer;
 }
 
@@ -582,6 +599,7 @@ void lexer() {
    char* bufferTwo = initializeBuffer();
    
    fillBuffer(bufferOne, 0);
+   fillHalfBuffer(bufferTwo, 0, LEN_BUFFER);
    
    globalIndex = 0;
    currentLine = 1;
