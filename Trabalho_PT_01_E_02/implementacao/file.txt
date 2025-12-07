@@ -1,10 +1,8 @@
-// Programa de teste para o analisador léxico
-
-if x == 10 {
-    y = x + 2;
-    msg = "Olá mundo";
-    total = y * 5;
-    /* comentário de bloco
-       que ocupa várias linhas */
-    return total;
+int main() {
+    int x, y, z;
+    float pi = 3.14;
+    char letter = 'a';
+    while (x > 0) {
+        x--;
+    }
 }
