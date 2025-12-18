@@ -1,49 +1,11 @@
 #include <bits/stdc++.h>
+#include "main.h"
 using namespace std;
 
-string fileInStringGlobal, buffer;
-int currentPosFileGlobal = 0, lineFileGlobal = 1, columnFileGlobal = 1;
-int initLexemeLine, initLexemeColumn;
+#define MAX_CHAR_READ_CODE 2
 
-class Token {
-   string name;
-   string lexeme;
-   string type;
-};
-
-class ReturnToken {
-public:
-    string type;
-    string attributeValue;
-    int line;
-    int column;
-
-    ReturnToken(string t, string aV, int l, int c) :
-        type(t), attributeValue(aV), line(l), column(c) {}
-};
-
-/* ===================
-| FUNCOES DO ANALISADOR
-|  ==================== */
-
-ostream& operator<<(ostream& os, const ReturnToken& t);
-string PassFileToString();
-void lexer();
-optional<ReturnToken> diagramVoidWithIdentifier();
-
-/* ===================
-| FUNCOES DO ANALISADOR
-|  ==================== */
-
-ostream& operator<<(ostream& os, const ReturnToken& t) {
-    os << left
-       << setw(10) << t.type
-       << setw(15) << t.attributeValue
-       << setw(6)  << t.line
-       << setw(6)  << t.column;
-    return os;
-}
-
+string code, buffer = "";
+int ini = 0, prox = 0, line = 1, column = 1;
 
 string PassFileToString() {
     ifstream file("file.txt");
@@ -56,28 +18,33 @@ string PassFileToString() {
     return fileInString;
 }
 
+string getToBuffer() {
+    return code.substr(ini, MAX_CHAR_READ_CODE);
+}
+
+bool NotLetterUnderlineOrDigit(char c) {
+    return (!isalpha(c) || !isdigit(c) || c != '_');
+}
+
 char getNextChar() {
-    char c = fileInStringGlobal[currentPosFileGlobal];
-    while(isspace(c)) {
-        if(c == '\n') {
-           lineFileGlobal++;
-           columnFileGlobal = 1;
+    char c;
+ 
+        c = buffer[ini++];
+ 
+        if (c == '\n') {
+            line++;
+            column = 1;
+        } else {
+            column++;
         }
-         currentPosFileGlobal++;
-         columnFileGlobal++;
-         getNextChar();
-    }
-    currentPosFileGlobal++;
-    columnFileGlobal++;
+  
     return c;
 }
 
 optional<ReturnToken> diagramVoidWithIdentifier() {
-    int state = 0, countLookahead = 0;
+    int state = 0;
     string lexeme = "";
     char c;
-    initLexemeLine = lineFileGlobal;
-    initLexemeColumn = columnFileGlobal;
 
     while (true) {
         
@@ -111,28 +78,94 @@ optional<ReturnToken> diagramVoidWithIdentifier() {
                 if (c == 'd') {
                     lexeme += c;
                     state = 4;
+                } else if (NotLetterUnderlineOrDigit(c)) {
+
+                    
                 } else return nullopt;
                 break;
 
             case 4:
                 c = getNextChar();
                 if (isalpha(c) || isdigit(c)) {
-                    countLookahead++;
                     lexeme += c;
                     
                 } else {
-                    if(countLookahead == 0) return ReturnToken("VOID", "-", initLexemeLine, initLexemeColumn);
-                    else return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
                 }
                 break;
         }
     }
 }
 
+optional<ReturnToken> diagramIdentifierAndKeyword() {
+
+    int state = 0;
+    string lexeme = "";
+    char c;
+
+    while (true) {
+        
+        switch (state) {
+            case 0:
+                c = getNextChar();
+                if (c == 'm') {
+                    lexeme += c;
+                    state = 1;
+                } else if (NotLetterUnderlineOrDigit(c)) {
+                    state = 11;
+                } else return nullopt;
+                break;
+
+            case 1:
+                c = getNextChar();
+                if (c == 'a') {
+                    lexeme += c;
+                    state = 2;
+                } else if (NotLetterUnderlineOrDigit(c)) {
+                    state = 11;
+                } else return nullopt;
+                break;
+
+            case 2:
+                c = getNextChar();
+                if (c == 'i') {
+                    lexeme += c;
+                    state = 3;
+                }else if (NotLetterUnderlineOrDigit(c)) {
+                    state = 11;
+                } else return nullopt;
+                break;
+
+            case 3:
+                c = getNextChar();
+                if (c == 'n') {
+                    lexeme += c;
+                    state = 4;
+                } else if (NotLetterUnderlineOrDigit(c)) {
+                    state = 11; // diagrama ID
+                }  else return nullopt;
+                break;
+
+            case 4: // d5
+                c = getNextChar();
+                if (NotLetterUnderlineOrDigit(c)) {
+                    state = 5; 
+                    
+                } else {
+                    lexeme += c;
+                    state = 10; // diagrama 
+                }
+                break;
+            
+                case 5:
+        }
+    }
+}
+
 void lexer() {
 
-    while(currentPosFileGlobal < fileInStringGlobal.length()) {
-        optional<ReturnToken> token = diagramVoidWithIdentifier();
+    while(ini < buffer.length()) {
+        buffer = getToBuffer();
+        optional<ReturnToken> token = diagramIdentifierAndKeyword();
         if (token.has_value()) {
             cout << *token << endl;
         }
@@ -141,13 +174,12 @@ void lexer() {
 
 }
 
-int main () {
-    try{
-        fileInStringGlobal = PassFileToString();
-    } catch(const exception e) {
+int main() {
+    try {
+        code = PassFileToString();
+        lexer();
+    } catch (const exception& e) {
         cout << e.what() << endl;
     }
-
-    lexer();
 
 }
