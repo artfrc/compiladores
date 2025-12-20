@@ -1,39 +1,16 @@
 #include <bits/stdc++.h>
+#include "main.h"
 using namespace std;
 
-string fileInStringGlobal, buffer;
-int currentPosFileGlobal = 0, lineFileGlobal = 1, columnFileGlobal = 1;
-int initLexemeLine, initLexemeColumn;
+string fileInStringGlobal;
+optional<ReturnToken> token;
 
-class Token {
-   string name;
-   string lexeme;
-   string type;
-};
+int currentPosFileGlobal = 0;
+int lineFileGlobal = 1;
+int columnFileGlobal = 1;
 
-class ReturnToken {
-public:
-    string type;
-    string attributeValue;
-    int line;
-    int column;
-
-    ReturnToken(string t, string aV, int l, int c) :
-        type(t), attributeValue(aV), line(l), column(c) {}
-};
-
-/* ===================
-| FUNCOES DO ANALISADOR
-|  ==================== */
-
-ostream& operator<<(ostream& os, const ReturnToken& t);
-string PassFileToString();
-void lexer();
-optional<ReturnToken> diagramVoidWithIdentifier();
-
-/* ===================
-| FUNCOES DO ANALISADOR
-|  ==================== */
+int initLexemeLine;
+int initLexemeColumn;
 
 ostream& operator<<(ostream& os, const ReturnToken& t) {
     os << left
@@ -44,110 +21,337 @@ ostream& operator<<(ostream& os, const ReturnToken& t) {
     return os;
 }
 
+static inline LexerState saveState() {
+    return { currentPosFileGlobal, lineFileGlobal, columnFileGlobal };
+}
+
+static inline void restoreState(const LexerState& st) {
+    currentPosFileGlobal = st.pos;
+    lineFileGlobal = st.line;
+    columnFileGlobal = st.col;
+}
 
 string PassFileToString() {
     ifstream file("file.txt");
     if (!file) throw runtime_error("Error to open file");
-    
-    string fileInString(
-        (istreambuf_iterator<char>(file)),
-        istreambuf_iterator<char>()
-    );
-    return fileInString;
+
+    return string((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+}
+
+void skipWhitespace() {
+    while (currentPosFileGlobal < (int)fileInStringGlobal.size() &&
+           isspace((unsigned char)fileInStringGlobal[currentPosFileGlobal])) {
+
+        char c = fileInStringGlobal[currentPosFileGlobal];
+        if (c == '\n') {
+            lineFileGlobal++;
+            columnFileGlobal = 1;
+        } else {
+            columnFileGlobal++;
+        }
+        currentPosFileGlobal++;
+    }
 }
 
 char getNextChar() {
+    if (currentPosFileGlobal >= (int)fileInStringGlobal.size()) return '\0';
+
     char c = fileInStringGlobal[currentPosFileGlobal];
-    while(isspace(c)) {
-        if(c == '\n') {
-           lineFileGlobal++;
-           columnFileGlobal = 1;
-        }
-         currentPosFileGlobal++;
-         columnFileGlobal++;
-         getNextChar();
+
+    if (c == '\n') {
+        lineFileGlobal++;
+        columnFileGlobal = 1;
+    } else {
+        columnFileGlobal++;
     }
+
     currentPosFileGlobal++;
-    columnFileGlobal++;
     return c;
 }
 
-optional<ReturnToken> diagramVoidWithIdentifier() {
-    int state = 0, countLookahead = 0;
-    string lexeme = "";
+optional<ReturnToken> diagramIntWithIdentifier() {
+    int state = 0;
+    int countLookahead = 0;
+    string lexeme;
     char c;
+
+    LexerState start = saveState();
     initLexemeLine = lineFileGlobal;
     initLexemeColumn = columnFileGlobal;
 
     while (true) {
-        
         switch (state) {
             case 0:
                 c = getNextChar();
-                if (c == 'v') {
-                    lexeme += c;
-                    state = 1;
-                } else return nullopt;
+                if (c == 'i') { lexeme += c; state = 1; }
+                else { restoreState(start); return nullopt; }
                 break;
 
             case 1:
                 c = getNextChar();
-                if (c == 'o') {
-                    lexeme += c;
-                    state = 2;
-                } else return nullopt;
+                if (c == 'n') { lexeme += c; state = 2; }
+                else { restoreState(start); return nullopt; }
                 break;
 
             case 2:
                 c = getNextChar();
-                if (c == 'i') {
-                    lexeme += c;
-                    state = 3;
-                } else return nullopt;
+                if (c == 't') { lexeme += c; state = 3; }
+                else { restoreState(start); return nullopt; }
                 break;
 
             case 3:
                 c = getNextChar();
-                if (c == 'd') {
+                if (isalpha((unsigned char)c) || isdigit((unsigned char)c)) {
                     lexeme += c;
-                    state = 4;
-                } else return nullopt;
-                break;
-
-            case 4:
-                c = getNextChar();
-                if (isalpha(c) || isdigit(c)) {
                     countLookahead++;
-                    lexeme += c;
-                    
                 } else {
-                    if(countLookahead == 0) return ReturnToken("VOID", "-", initLexemeLine, initLexemeColumn);
-                    else return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
+                    if (countLookahead == 0)
+                        return ReturnToken("KEYWORD", "int", initLexemeLine, initLexemeColumn);
+                    else
+                        return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
                 }
                 break;
         }
     }
 }
 
-void lexer() {
+optional<ReturnToken> diagramMainWithIdentifier() {
+    int state = 0;
+    int countLookahead = 0;
+    string lexeme;
+    char c;
 
-    while(currentPosFileGlobal < fileInStringGlobal.length()) {
-        optional<ReturnToken> token = diagramVoidWithIdentifier();
-        if (token.has_value()) {
-            cout << *token << endl;
+    LexerState start = saveState();
+    initLexemeLine = lineFileGlobal;
+    initLexemeColumn = columnFileGlobal;
+
+    while (true) {
+        switch (state) {
+            case 0:
+                c = getNextChar();
+                if (c == 'm') { lexeme += c; state = 1; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 1:
+                c = getNextChar();
+                if (c == 'a') { lexeme += c; state = 2; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 2:
+                c = getNextChar();
+                if (c == 'i') { lexeme += c; state = 3; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 3:
+                c = getNextChar();
+                if (c == 'n') { lexeme += c; state = 4; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 4:
+                c = getNextChar();
+                if (isalpha((unsigned char)c) || isdigit((unsigned char)c)) {
+                    lexeme += c;
+                    countLookahead++;
+                } else {
+                    if (countLookahead == 0)
+                        return ReturnToken("KEYWORD", "main", initLexemeLine, initLexemeColumn);
+                    else
+                        return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
+                }
+                break;
         }
-
     }
-
 }
 
-int main () {
-    try{
-        fileInStringGlobal = PassFileToString();
-    } catch(const exception e) {
-        cout << e.what() << endl;
+optional<ReturnToken> diagramCharWithIdentifier() {
+    int state = 0;
+    int countLookahead = 0;
+    string lexeme;
+    char c;
+
+    LexerState start = saveState();
+    initLexemeLine = lineFileGlobal;
+    initLexemeColumn = columnFileGlobal;
+
+    while (true) {
+        switch (state) {
+            case 0:
+                c = getNextChar();
+                if (c == 'c') { lexeme += c; state = 1; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 1:
+                c = getNextChar();
+                if (c == 'h') { lexeme += c; state = 2; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 2:
+                c = getNextChar();
+                if (c == 'a') { lexeme += c; state = 3; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 3:
+                c = getNextChar();
+                if (c == 'r') { lexeme += c; state = 4; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 4:
+                c = getNextChar();
+                if (isalpha((unsigned char)c) || isdigit((unsigned char)c)) {
+                    lexeme += c;
+                    countLookahead++;
+                } else {
+                    if (countLookahead == 0)
+                        return ReturnToken("KEYWORD", "char", initLexemeLine, initLexemeColumn);
+                    else
+                        return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
+                }
+                break;
+        }
+    }
+}
+
+optional<ReturnToken> diagramFloatWithIdentifier() {
+    int state = 0;
+    int countLookahead = 0;
+    string lexeme;
+    char c;
+
+    LexerState start = saveState();
+    initLexemeLine = lineFileGlobal;
+    initLexemeColumn = columnFileGlobal;
+
+    while (true) {
+        switch (state) {
+            case 0:
+                c = getNextChar();
+                if (c == 'f') { lexeme += c; state = 1; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 1:
+                c = getNextChar();
+                if (c == 'l') { lexeme += c; state = 2; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 2:
+                c = getNextChar();
+                if (c == 'o') { lexeme += c; state = 3; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 3:
+                c = getNextChar();
+                if (c == 'a') { lexeme += c; state = 4; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 4:
+                c = getNextChar();
+                if (c == 't') { lexeme += c; state = 5; }
+                else { restoreState(start); return nullopt; }
+                break;
+
+            case 5:
+                c = getNextChar();
+                if (isalpha((unsigned char)c) || isdigit((unsigned char)c)) {
+                    lexeme += c;
+                    countLookahead++;
+                } else {
+                    if (countLookahead == 0)
+                        return ReturnToken("KEYWORD", "float", initLexemeLine, initLexemeColumn);
+                    else
+                        return ReturnToken("ID", lexeme, initLexemeLine, initLexemeColumn);
+                }
+                break;
+        }
+    }
+}
+
+optional<ReturnToken> nextToken() {
+    skipWhitespace();
+
+    if (currentPosFileGlobal >= (int)fileInStringGlobal.size())
+        return nullopt;
+
+    LexerState start = saveState();
+    vector<Candidate> candidates;
+
+    auto tryDiagram = [&](auto&& fn) {
+        restoreState(start);
+        auto t = fn();
+        if (t.has_value()) {
+            LexerState end = saveState();
+            candidates.push_back(Candidate{
+                t,
+                end.pos - start.pos,
+                end.pos,
+                end.line,
+                end.col
+            });
+        }
+        // se falhou, o próprio diagrama restaura (ou a gente restaura no começo do próximo)
+    };
+
+    tryDiagram(diagramIntWithIdentifier);
+    tryDiagram(diagramMainWithIdentifier);
+    tryDiagram(diagramCharWithIdentifier);
+    tryDiagram(diagramFloatWithIdentifier);
+
+    if (candidates.empty()) {
+        // Consome 1 char “desconhecido” pra não travar
+        restoreState(start);
+        getNextChar();
+        return nullopt;
     }
 
-    lexer();
+    auto best = max_element(
+        candidates.begin(),
+        candidates.end(),
+        [](const Candidate& a, const Candidate& b) {
+            return a.lexemeSize < b.lexemeSize;
+        }
+    );
 
+    currentPosFileGlobal = best->finalPos;
+    lineFileGlobal = best->finalLine;
+    columnFileGlobal = best->finalColumn;
+
+    return best->token;
+}
+
+void lexer() {
+    cout << left
+         << setw(10) << "TYPE"
+         << setw(15) << "LEXEME"
+         << setw(6)  << "LINE"
+         << setw(6)  << "COL"
+         << "\n";
+
+    cout << string(37, '-') << "\n";
+
+    while (currentPosFileGlobal < (int)fileInStringGlobal.size()) {
+        token = nextToken();
+        if (token.has_value()) {
+            cout << *token << "\n";
+        }
+    }
+}
+
+int main() {
+    try {
+        fileInStringGlobal = PassFileToString();
+        lexer();
+    } catch (const exception& e) {
+        cout << e.what() << "\n";
+    }
 }
