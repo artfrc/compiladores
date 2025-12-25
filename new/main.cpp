@@ -39,17 +39,33 @@ string PassFileToString() {
 }
 
 void skipWhitespace() {
-    while (currentPosFileGlobal < (int)fileInStringGlobal.size() &&
-           isspace((unsigned char)fileInStringGlobal[currentPosFileGlobal])) {
+    while (currentPosFileGlobal < (int)fileInStringGlobal.size()) {
 
         char c = fileInStringGlobal[currentPosFileGlobal];
-        if (c == '\n') {
-            lineFileGlobal++;
-            columnFileGlobal = 1;
-        } else {
-            columnFileGlobal++;
+
+        // whitespace normal
+        if (isspace((unsigned char)c)) {
+            if (c == '\n') {
+                lineFileGlobal++;
+                columnFileGlobal = 1;
+            } else {
+                columnFileGlobal++;
+            }
+            currentPosFileGlobal++;
+            continue;
         }
-        currentPosFileGlobal++;
+
+        // comentário de bloco /* ... */
+        if (c == '/' &&
+            currentPosFileGlobal + 1 < (int)fileInStringGlobal.size() &&
+            fileInStringGlobal[currentPosFileGlobal + 1] == '*') {
+
+            skipBlockComment();
+            continue;
+        }
+
+        // não é whitespace nem comentário
+        break;
     }
 }
 
@@ -327,6 +343,36 @@ optional<ReturnToken> nextToken() {
     columnFileGlobal = best->finalColumn;
 
     return best->token;
+}
+
+bool skipBlockComment() {
+    // garante que é realmente /*
+    if (currentPosFileGlobal + 1 >= (int)fileInStringGlobal.size())
+        return false;
+
+    if (fileInStringGlobal[currentPosFileGlobal] != '/' ||
+        fileInStringGlobal[currentPosFileGlobal + 1] != '*')
+        return false;
+
+    // consome /*
+    getNextChar(); // '/'
+    getNextChar(); // '*'
+
+    while (currentPosFileGlobal < (int)fileInStringGlobal.size()) {
+        char c = getNextChar();
+
+        // encontrou */
+        if (c == '*' &&
+            currentPosFileGlobal < (int)fileInStringGlobal.size() &&
+            fileInStringGlobal[currentPosFileGlobal] == '/') {
+
+            getNextChar(); // consome '/'
+            return true;
+        }
+    }
+
+    // chegou EOF sem fechar comentário
+    throw runtime_error("Unterminated block comment");
 }
 
 void lexer() {

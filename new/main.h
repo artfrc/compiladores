@@ -31,6 +31,8 @@ string PassFileToString();
 void lexer();
 
 optional<ReturnToken> nextToken();
+void skipWhitespace();
+bool skipBlockComment();
 optional<ReturnToken> diagramMainWithIdentifier();
 optional<ReturnToken> diagramIntWithIdentifier();
 optional<ReturnToken> diagramCharWithIdentifier();

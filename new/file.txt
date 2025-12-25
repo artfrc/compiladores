@@ -1,4 +1,6 @@
-int
+int 
+/*
 main
 char
 float
+*/
