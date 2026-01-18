@@ -1,3 +1,13 @@
-hello   world
-    linha com tab
-outra linha
+voidx
+void
+int
+intx
+char
+charx
+float
+floatx
+main
+mainx
+if
+ifx
+
