@@ -6,6 +6,7 @@ using namespace std;
 string buffer, lexeme = "";
 int startLexeme = 0, nextPosLexeme = 0;
 int fileLine = 1, fileColumn = 1;
+int tokenStartLine = 1, tokenStartColumn = 1;
 
 class Token {
 public:
@@ -128,12 +129,14 @@ char getNext() {
         // ==== IGNORAR COMENTÁRIOS % ... % ===
         if(next == '%') {
             nextPosLexeme++; // pula o primeiro %
+            fileColumn++;
 
             while(nextPosLexeme < buffer.length()) {
                 char c = buffer[nextPosLexeme];
 
                 if(c == '%') { // fim do comentário
                     nextPosLexeme++;
+                    fileColumn++;
                     break;
                 }
 
@@ -162,22 +165,30 @@ char getNext() {
             } 
             else if(next == ' ') {
                 if(lexeme != "") {
-                    nextPosLexeme++;
-                    return next;
+                    return '\0';
                 } else {
                     nextPosLexeme++;
+                    fileColumn++;
                 }
             } 
             else {
                 nextPosLexeme++;
+                if(next == '\t') {
+                    fileColumn++;
+                } else {
+                    fileColumn++;
+                }
             }
         } 
         else {
             if(lexeme == "") {
                 startLexeme = nextPosLexeme;
-                fileColumn = startLexeme + 1;
+                tokenStartLine = fileLine;
+                tokenStartColumn = fileColumn;
             }
+            lexeme += next;
             nextPosLexeme++;
+            fileColumn++;
             return next;
         }   
     }
@@ -203,10 +214,10 @@ optional<Token> getIntLexeme() {
         case 1:
             c = getNext();
             if(c == 'i'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -214,10 +225,10 @@ optional<Token> getIntLexeme() {
         case 2:
             c = getNext();
             if(c == 'n'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -225,10 +236,10 @@ optional<Token> getIntLexeme() {
         case 3:
             c = getNext();
             if(c == 't'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -237,11 +248,13 @@ optional<Token> getIntLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é INT mesmo
                 Token token("INT", "INT", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -264,10 +277,10 @@ optional<Token> getCharLexeme() {
         case 1:
             c = getNext();
             if(c == 'c'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -275,10 +288,10 @@ optional<Token> getCharLexeme() {
         case 2:
             c = getNext();
             if(c == 'h'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -286,10 +299,10 @@ optional<Token> getCharLexeme() {
         case 3:
             c = getNext();
             if(c == 'a'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -297,10 +310,10 @@ optional<Token> getCharLexeme() {
         case 4:
             c = getNext();
             if(c == 'r'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -309,11 +322,13 @@ optional<Token> getCharLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é CHAR mesmo
                 Token token("CHAR", "CHAR", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -336,10 +351,10 @@ optional<Token> getFloatLexeme() {
         case 1:
             c = getNext();
             if(c == 'f'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -347,10 +362,10 @@ optional<Token> getFloatLexeme() {
         case 2:
             c = getNext();
             if(c == 'l'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -358,10 +373,10 @@ optional<Token> getFloatLexeme() {
         case 3:
             c = getNext();
             if(c == 'o'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -369,10 +384,10 @@ optional<Token> getFloatLexeme() {
         case 4:
             c = getNext();
             if(c == 'a'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -380,10 +395,10 @@ optional<Token> getFloatLexeme() {
         case 5:
             c = getNext();
             if(c == 't'){
-                lexeme += c;
                 state = 6;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -392,11 +407,13 @@ optional<Token> getFloatLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é FLOAT mesmo
                 Token token("FLOAT", "FLOAT", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -419,10 +436,10 @@ optional<Token> getVoidLexeme() {
         case 1:
             c = getNext();
             if(c == 'v'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -430,10 +447,10 @@ optional<Token> getVoidLexeme() {
         case 2:
             c = getNext();
             if(c == 'o'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -441,10 +458,10 @@ optional<Token> getVoidLexeme() {
         case 3:
             c = getNext();
             if(c == 'i'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -452,10 +469,10 @@ optional<Token> getVoidLexeme() {
         case 4:
             c = getNext();
             if(c == 'd'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -464,11 +481,13 @@ optional<Token> getVoidLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é VOID mesmo
                 Token token("VOID", "VOID", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -491,10 +510,10 @@ optional<Token> getMainLexeme() {
         case 1:
             c = getNext();
             if(c == 'm'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -502,10 +521,10 @@ optional<Token> getMainLexeme() {
         case 2:
             c = getNext();
             if(c == 'a'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -513,10 +532,10 @@ optional<Token> getMainLexeme() {
         case 3:
             c = getNext();
             if(c == 'i'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -524,10 +543,10 @@ optional<Token> getMainLexeme() {
         case 4:
             c = getNext();
             if(c == 'n'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -536,11 +555,13 @@ optional<Token> getMainLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é VOID mesmo
                 Token token("MAIN", "MAIN", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -564,10 +585,10 @@ optional<Token> getIfLexeme() {
         case 1:
             c = getNext();
             if(c == 'i'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -575,10 +596,10 @@ optional<Token> getIfLexeme() {
         case 2:
             c = getNext();
             if(c == 'f'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -587,11 +608,13 @@ optional<Token> getIfLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é IF mesmo
                 Token token("IF", "IF", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -614,10 +637,10 @@ optional<Token> getThenLexeme() {
         case 1:
             c = getNext();
             if(c == 't'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -625,10 +648,10 @@ optional<Token> getThenLexeme() {
         case 2:
             c = getNext();
             if(c == 'h'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -636,10 +659,10 @@ optional<Token> getThenLexeme() {
         case 3:
             c = getNext();
             if(c == 'e'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -647,10 +670,10 @@ optional<Token> getThenLexeme() {
         case 4:
             c = getNext();
             if(c == 'n'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -659,11 +682,13 @@ optional<Token> getThenLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é THEN mesmo
                 Token token("THEN", "THEN", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -686,10 +711,10 @@ optional<Token> getElsifLexeme() {
         case 1:
             c = getNext();
             if(c == 'e'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -697,10 +722,10 @@ optional<Token> getElsifLexeme() {
         case 2:
             c = getNext();
             if(c == 'l'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -708,10 +733,10 @@ optional<Token> getElsifLexeme() {
         case 3:
             c = getNext();
             if(c == 's'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -719,10 +744,10 @@ optional<Token> getElsifLexeme() {
         case 4:
             c = getNext();
             if(c == 'i'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -730,10 +755,10 @@ optional<Token> getElsifLexeme() {
         case 5:
             c = getNext();
             if(c == 'f'){
-                lexeme += c;
                 state = 6;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -742,11 +767,13 @@ optional<Token> getElsifLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é ELSIF mesmo
                 Token token("ELSIF", "ELSIF", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -769,10 +796,10 @@ optional<Token> getElseLexeme() {
         case 1:
             c = getNext();
             if(c == 'e'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -780,10 +807,10 @@ optional<Token> getElseLexeme() {
         case 2:
             c = getNext();
             if(c == 'l'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -791,10 +818,10 @@ optional<Token> getElseLexeme() {
         case 3:
             c = getNext();
             if(c == 's'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -802,10 +829,10 @@ optional<Token> getElseLexeme() {
         case 4:
             c = getNext();
             if(c == 'e'){
-                lexeme += c;
                 state = 5;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -814,11 +841,13 @@ optional<Token> getElseLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é ELSE mesmo
                 Token token("ELSE", "ELSE", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -841,10 +870,10 @@ optional<Token> getForLexeme() {
         case 1:
             c = getNext();
             if(c == 'f'){
-                lexeme += c;
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -852,10 +881,10 @@ optional<Token> getForLexeme() {
         case 2:
             c = getNext();
             if(c == 'o'){
-                lexeme += c;
                 state = 3;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -863,10 +892,10 @@ optional<Token> getForLexeme() {
         case 3:
             c = getNext();
             if(c == 'r'){
-                lexeme += c;
                 state = 4;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 lexeme = "";
                 return nullopt;
             }
@@ -875,11 +904,13 @@ optional<Token> getForLexeme() {
             c = getNextForLookahead();
             if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             } else { // é FOR mesmo
                 Token token("FOR", "FOR", symbolTable.size());
                 insertSymbolInTable(token);
                 tokensList.push_back(token);
+                lexeme = "";
                 return token;
 
             }
@@ -901,28 +932,32 @@ optional<Token> getIdLexeme() {
         case 1:
             c = getNext();
             if(isalpha(c)){
-                lexeme += toupper(c);
                 state = 2;
             } else {
                 nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
                 return nullopt;
             }
             break;
         case 2:
             c = getNext();
             if((isalpha(c) or isdigit(c))){
-                lexeme += toupper(c);
                 state = 2;
             } else {
                 state = 3;
             }
             break;
         case 3: {
-            Token token("ID", lexeme, "ID", fileLine, startLexeme, symbolTable.size());
+            string lexUpper = "";
+            for(char ch : lexeme) {
+                lexUpper += toupper(ch);
+            }
+            Token token("ID", lexUpper, "ID", tokenStartLine, tokenStartColumn, symbolTable.size());
             tokensList.push_back(token);
             if(insertSymbolInTable(token)) {
                 return token;
             }
+            lexeme = "";
             break;
         }
 
