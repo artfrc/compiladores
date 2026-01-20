@@ -573,6 +573,294 @@ optional<Token> getIfLexeme() {
     }
 }
 
+optional<Token> getThenLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 't'){
+                lexeme += c;
+                state = 2;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'h'){
+                lexeme += c;
+                state = 3;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNext();
+            if(c == 'e'){
+                lexeme += c;
+                state = 4;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 4:
+            c = getNext();
+            if(c == 'n'){
+                lexeme += c;
+                state = 5;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 5:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                return nullopt;
+            } else { // é THEN mesmo
+                Token token("THEN", "THEN", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
+optional<Token> getElsifLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 'e'){
+                lexeme += c;
+                state = 2;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'l'){
+                lexeme += c;
+                state = 3;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNext();
+            if(c == 's'){
+                lexeme += c;
+                state = 4;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 4:
+            c = getNext();
+            if(c == 'i'){
+                lexeme += c;
+                state = 5;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 5:
+            c = getNext();
+            if(c == 'f'){
+                lexeme += c;
+                state = 6;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 6:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                return nullopt;
+            } else { // é ELSIF mesmo
+                Token token("ELSIF", "ELSIF", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
+optional<Token> getElseLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 'e'){
+                lexeme += c;
+                state = 2;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'l'){
+                lexeme += c;
+                state = 3;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNext();
+            if(c == 's'){
+                lexeme += c;
+                state = 4;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 4:
+            c = getNext();
+            if(c == 'e'){
+                lexeme += c;
+                state = 5;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 5:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                return nullopt;
+            } else { // é ELSE mesmo
+                Token token("ELSE", "ELSE", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
+optional<Token> getForLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 'f'){
+                lexeme += c;
+                state = 2;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'o'){
+                lexeme += c;
+                state = 3;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNext();
+            if(c == 'r'){
+                lexeme += c;
+                state = 4;
+            } else {
+                nextPosLexeme = startLexeme;
+                lexeme = "";
+                return nullopt;
+            }
+            break;
+        case 4:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                return nullopt;
+            } else { // é FOR mesmo
+                Token token("FOR", "FOR", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
 optional<Token> getIdLexeme() {
 
     lexeme = "";
@@ -630,8 +918,16 @@ void lexer() {
               } if(token == nullopt) {
                  token = getMainLexeme();
               } if(token == nullopt) {
+                token = getThenLexeme();
+             } if(token == nullopt) {
+                token = getElsifLexeme();
+             } if(token == nullopt) {
+                token = getElseLexeme();
+             } if(token == nullopt) {
+                token = getForLexeme();
+             } if(token == nullopt) {
                 token = getIdLexeme();
-             }
+             } 
         }         
     }
 

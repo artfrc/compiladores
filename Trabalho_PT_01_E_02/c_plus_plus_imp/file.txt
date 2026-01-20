@@ -1,13 +1,1 @@
-voidx
-void
-int
-intx
-char
-charx
-float
-floatx
-main
-mainx
-if
-ifx
-
+int soma
