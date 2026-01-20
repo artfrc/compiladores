@@ -121,30 +121,58 @@ char getNext() {
     if(nextPosLexeme >= buffer.length()) {
         return '\0';
     }
+
     while(true) {
         char next = buffer[nextPosLexeme];
+
+        // ==== IGNORAR COMENTÁRIOS % ... % ===
+        if(next == '%') {
+            nextPosLexeme++; // pula o primeiro %
+
+            while(nextPosLexeme < buffer.length()) {
+                char c = buffer[nextPosLexeme];
+
+                if(c == '%') { // fim do comentário
+                    nextPosLexeme++;
+                    break;
+                }
+
+                // controle de linha/coluna
+                if(c == '\n') {
+                    fileLine++;
+                    fileColumn = 1;
+                } else {
+                    fileColumn++;
+                }
+
+                nextPosLexeme++;
+            }
+            continue; // volta a procurar token
+        }
+
         if(isspace(next)) {
             if(next == '\n') {
                 if(lexeme != "") {
-                    // Se há lexema sendo formado, retorna para finalizá-lo
                     return '\0';
                 } else {
-                    // Se não há lexema, apenas avança
                     nextPosLexeme++;
                     fileLine++;
                     fileColumn = 1;
                 }
-            } else if(next == ' ') {
+            } 
+            else if(next == ' ') {
                 if(lexeme != "") {
                     nextPosLexeme++;
-                    return next;  // Retorna espaço para finalizar lexema
+                    return next;
                 } else {
-                    nextPosLexeme++;  // Ignora espaços no início
+                    nextPosLexeme++;
                 }
-            } else {
-                nextPosLexeme++;  // Outros espaços em branco
+            } 
+            else {
+                nextPosLexeme++;
             }
-        } else {
+        } 
+        else {
             if(lexeme == "") {
                 startLexeme = nextPosLexeme;
                 fileColumn = startLexeme + 1;
@@ -154,6 +182,7 @@ char getNext() {
         }   
     }
 }
+
 
 char getNextForLookahead() {
     if(nextPosLexeme >= buffer.length()) {
