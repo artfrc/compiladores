@@ -1,35 +1,48 @@
-int main() {
-    int x, y, z;
-    int count;
-    float pi, radius, area;
-    char letter, symbol;
-    
-    x = 10;
-    y = 20;
-    z = 30;
-    count = 0;
-    
-    pi = 3.14159;
-    radius = 5.5;
-    area = pi;
-    
-    letter = 'A';
-    symbol = 'x';
-    
-    while (x > 0) {
-        count = count;
-        x = x;
-    }
-    
-    while (y > z) {
-        y = y;
-    }
-    
-    int array[10];
-    float numbers[5];
-    char letters[26];
-    
-    int a, b, c, d, e;
-    float f1, f2, f3;
-    char ch1, ch2;
-}
+%
+   isso
+      eh
+         um
+            comentarioo
+               %
+
+<=
+<>
+=
+==
+!=
+>=
+>
+(
+)
+;
+,
+:=
+% palavras reservadas %
+if
+then
+elsif
+else
+void
+int
+char
+float
+main
+for
+% identificadores %
+soma
+total
+a
+b
+% operadores matematicos %
++
+-
+*
+**
+/
+11
+11.100
+0.1E-2
+32767
+32768
+'a'
+'B'

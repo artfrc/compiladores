@@ -55,6 +55,14 @@ optional<Token> token;
 vector<Token> tokensList;
 unordered_map<string, Token> symbolTable;
 
+void FailedLexeme() {
+
+    nextPosLexeme = startLexeme;
+    fileColumn = tokenStartColumn;
+    lexeme = "";
+
+}
+
 string getContentFile() {
             
     try {
@@ -126,21 +134,19 @@ char getNext() {
     while(true) {
         char next = buffer[nextPosLexeme];
 
-        // ==== IGNORAR COMENTÁRIOS % ... % ===
         if(next == '%') {
-            nextPosLexeme++; // pula o primeiro %
+            nextPosLexeme++;
             fileColumn++;
 
             while(nextPosLexeme < buffer.length()) {
                 char c = buffer[nextPosLexeme];
 
-                if(c == '%') { // fim do comentário
+                if(c == '%') {
                     nextPosLexeme++;
                     fileColumn++;
                     break;
                 }
 
-                // controle de linha/coluna
                 if(c == '\n') {
                     fileLine++;
                     fileColumn = 1;
@@ -150,7 +156,7 @@ char getNext() {
 
                 nextPosLexeme++;
             }
-            continue; // volta a procurar token
+            continue;
         }
 
         if(isspace(next)) {
@@ -216,9 +222,7 @@ optional<Token> getIntLexeme() {
             if(c == 'i'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -227,9 +231,7 @@ optional<Token> getIntLexeme() {
             if(c == 'n'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -238,9 +240,7 @@ optional<Token> getIntLexeme() {
             if(c == 't'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -279,9 +279,7 @@ optional<Token> getCharLexeme() {
             if(c == 'c'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -290,9 +288,7 @@ optional<Token> getCharLexeme() {
             if(c == 'h'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -301,9 +297,7 @@ optional<Token> getCharLexeme() {
             if(c == 'a'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -312,9 +306,7 @@ optional<Token> getCharLexeme() {
             if(c == 'r'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -353,9 +345,7 @@ optional<Token> getFloatLexeme() {
             if(c == 'f'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -364,9 +354,7 @@ optional<Token> getFloatLexeme() {
             if(c == 'l'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -375,9 +363,7 @@ optional<Token> getFloatLexeme() {
             if(c == 'o'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -386,9 +372,7 @@ optional<Token> getFloatLexeme() {
             if(c == 'a'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -397,9 +381,7 @@ optional<Token> getFloatLexeme() {
             if(c == 't'){
                 state = 6;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -438,9 +420,7 @@ optional<Token> getVoidLexeme() {
             if(c == 'v'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -449,9 +429,7 @@ optional<Token> getVoidLexeme() {
             if(c == 'o'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -460,9 +438,7 @@ optional<Token> getVoidLexeme() {
             if(c == 'i'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -471,9 +447,7 @@ optional<Token> getVoidLexeme() {
             if(c == 'd'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -512,9 +486,7 @@ optional<Token> getMainLexeme() {
             if(c == 'm'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -523,9 +495,7 @@ optional<Token> getMainLexeme() {
             if(c == 'a'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -534,9 +504,7 @@ optional<Token> getMainLexeme() {
             if(c == 'i'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -545,9 +513,7 @@ optional<Token> getMainLexeme() {
             if(c == 'n'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -587,9 +553,7 @@ optional<Token> getIfLexeme() {
             if(c == 'i'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -598,9 +562,7 @@ optional<Token> getIfLexeme() {
             if(c == 'f'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -639,9 +601,7 @@ optional<Token> getThenLexeme() {
             if(c == 't'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -650,9 +610,7 @@ optional<Token> getThenLexeme() {
             if(c == 'h'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -661,9 +619,7 @@ optional<Token> getThenLexeme() {
             if(c == 'e'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -672,9 +628,7 @@ optional<Token> getThenLexeme() {
             if(c == 'n'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -713,9 +667,7 @@ optional<Token> getElsifLexeme() {
             if(c == 'e'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -724,9 +676,7 @@ optional<Token> getElsifLexeme() {
             if(c == 'l'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -735,9 +685,7 @@ optional<Token> getElsifLexeme() {
             if(c == 's'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -746,9 +694,7 @@ optional<Token> getElsifLexeme() {
             if(c == 'i'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -757,9 +703,7 @@ optional<Token> getElsifLexeme() {
             if(c == 'f'){
                 state = 6;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -798,9 +742,7 @@ optional<Token> getElseLexeme() {
             if(c == 'e'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -809,9 +751,7 @@ optional<Token> getElseLexeme() {
             if(c == 'l'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -820,9 +760,7 @@ optional<Token> getElseLexeme() {
             if(c == 's'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -831,9 +769,7 @@ optional<Token> getElseLexeme() {
             if(c == 'e'){
                 state = 5;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -872,9 +808,7 @@ optional<Token> getForLexeme() {
             if(c == 'f'){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -883,9 +817,7 @@ optional<Token> getForLexeme() {
             if(c == 'o'){
                 state = 3;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -894,9 +826,7 @@ optional<Token> getForLexeme() {
             if(c == 'r'){
                 state = 4;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
-                lexeme = "";
+                FailedLexeme();
                 return nullopt;
             }
             break;
@@ -921,6 +851,173 @@ optional<Token> getForLexeme() {
     }
 }
 
+optional<Token> getRelopLexeme() {
+    lexeme = "";
+
+    int state = 1;
+    char c;
+    
+    // Guarda a posição inicial para possível rollback
+    int savedNextPos = nextPosLexeme;
+    int savedFileColumn = fileColumn;
+    int savedFileLine = fileLine;
+
+    while(true) {
+        switch (state) {
+            case 1:
+                c = getNext();
+                if(c == '<') {
+                    state = 2;
+                } else if(c == '=') {
+                    state = 6;
+                } else if(c == '>') {
+                    state = 7;
+                } else if(c == '!') {
+                    state = 10; // Novo estado para '!'
+                } else {
+                    // Rollback
+                    nextPosLexeme = startLexeme;
+                    fileColumn = tokenStartColumn;
+                    fileLine = tokenStartLine;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 2:
+                c = getNextForLookahead();
+                if(c == '=') {
+                    getNext(); // Consome o '='
+                    state = 3;
+                } else if(c == '>') {
+                    getNext(); // Consome o '>'
+                    state = 4;
+                } else {
+                    state = 5;
+                }
+                break;
+                
+            case 3: {
+                // <=
+                string type = "LE";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+                
+            case 4: {
+                // <>
+                string type = "NE";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+                
+            case 5: {
+                // < (sozinho)
+                string type = "LT";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+                
+            case 6:
+                c = getNextForLookahead();
+                if(c == '=') {
+                    getNext(); // Consome o segundo '='
+                    state = 11; // '=='
+                } else {
+                    state = 12; // '=' sozinho
+                }
+                break;
+                
+            case 7:
+                c = getNextForLookahead();
+                if(c == '=') {
+                    getNext(); // Consome o '='
+                    state = 8;
+                } else {
+                    state = 9;
+                }
+                break;
+                
+            case 8: {
+                // >=
+                string type = "GE";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+
+            case 9: {
+                // > (sozinho)
+                string type = "GT";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+            
+            case 10: // Estado para '!'
+                c = getNextForLookahead();
+                if(c == '=') {
+                    getNext(); // Consome o '='
+                    state = 13; // '!='
+                } else {
+                    // '!' sozinho não é um RELOP válido
+                    nextPosLexeme = startLexeme;
+                    FailedLexeme();
+                    return nullopt;
+                }
+                break;
+                
+            case 11: { // '=='
+                string type = "EE"; // Double Equal (ou "EQ" se preferir manter consistência)
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+                
+            case 12: { // '=' sozinho
+                string type = "EQ";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+                
+            case 13: { // '!='
+                string type = "NE";
+                Token token("RELOP", lexeme, type, tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+            }
+
+            default:
+                // Rollback em caso de erro
+                nextPosLexeme = savedNextPos;
+                fileColumn = savedFileColumn;
+                fileLine = savedFileLine;
+                lexeme = "";
+                return nullopt;
+        }
+    }
+}
+
 optional<Token> getIdLexeme() {
 
     lexeme = "";
@@ -934,14 +1031,14 @@ optional<Token> getIdLexeme() {
             if(isalpha(c)){
                 state = 2;
             } else {
-                nextPosLexeme = startLexeme;
-                fileColumn = tokenStartColumn;
+                FailedLexeme();
                 return nullopt;
             }
             break;
         case 2:
-            c = getNext();
-            if((isalpha(c) or isdigit(c))){
+            c = getNextForLookahead();  // USA LOOKAHEAD AQUI
+            if((isalpha(c) || isdigit(c))){
+                getNext();  // SÓ CONSOME SE FOR VÁLIDO
                 state = 2;
             } else {
                 state = 3;
@@ -954,11 +1051,9 @@ optional<Token> getIdLexeme() {
             }
             Token token("ID", lexUpper, "ID", tokenStartLine, tokenStartColumn, symbolTable.size());
             tokensList.push_back(token);
-            if(insertSymbolInTable(token)) {
-                return token;
-            }
+            insertSymbolInTable(token);
             lexeme = "";
-            break;
+            return token;
         }
 
         default:
@@ -967,34 +1062,654 @@ optional<Token> getIdLexeme() {
     }
 }
 
+optional <Token> getOpenParenthesis() {
+    lexeme = "";
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == '('){
+                state = 2;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2:
+            Token token("LPAREN", lexeme, "LPAREN", tokenStartLine, tokenStartColumn, symbolTable.size());
+            tokensList.push_back(token);
+            insertSymbolInTable(token);
+            lexeme = "";
+            return token;
+
+            break;
+        }
+    }
+
+}
+
+optional <Token> getCloseParenthesis() {
+    lexeme = "";
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == ')'){
+                state = 2;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2:
+            Token token("LPAREN", lexeme, "LPAREN", tokenStartLine, tokenStartColumn, symbolTable.size());
+            tokensList.push_back(token);
+            insertSymbolInTable(token);
+            lexeme = "";
+            return token;
+
+            break;
+        }
+    }
+
+}
+
+optional <Token> getCommaLexeme() {
+    lexeme = "";
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == ';'){
+                state = 2;
+            } else if( c == ',') {
+                state = 3;
+             } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2: {
+            Token token("COMMA", lexeme, "COMMA", tokenStartLine, tokenStartColumn, symbolTable.size());
+            tokensList.push_back(token);
+            insertSymbolInTable(token);
+            lexeme = "";
+            return token;
+            break;
+        }
+        case 3: {
+            Token token("COMMA", lexeme, "COMMA", tokenStartLine, tokenStartColumn, symbolTable.size());
+            tokensList.push_back(token);
+            insertSymbolInTable(token);
+            lexeme = "";
+            return token;
+            break;
+        }
+        }
+    }
+
+}
+
+optional <Token> getassignmentLexeme() {
+    lexeme = "";
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == ':'){
+                state = 2;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == '=') {
+                state = 3;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+        case 3:
+            Token token("ATRIB", lexeme, "ATRIB", tokenStartLine, tokenStartColumn, symbolTable.size());
+            tokensList.push_back(token);
+            insertSymbolInTable(token);
+            lexeme = "";
+            return token;
+
+            break;
+        }
+    }
+
+}
+
+optional<Token> getMathOperatorLexeme() {
+    lexeme = "";
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+            case 1:
+                c = getNext();
+                if(c == '*') {
+                    state = 2;
+                } else if(c == '+') {
+                    state = 3;
+                } else if(c == '-') {
+                    state = 4;
+                } else if(c == '/') {
+                    state = 5;
+                } else {
+                    FailedLexeme();
+                    return nullopt;
+                }
+                break;
+                
+            case 2:
+                c = getNextForLookahead();
+                if(c == '*') {
+                    getNext(); // Consome o segundo '*'
+                    Token token("EXP", lexeme, "EXP", tokenStartLine, tokenStartColumn, symbolTable.size());
+                    tokensList.push_back(token);
+                    insertSymbolInTable(token);
+                    lexeme = "";
+                    return token;
+                } else {
+                    // Apenas '*' (multiplicação)
+                    Token token("MULT", lexeme, "MULT", tokenStartLine, tokenStartColumn, symbolTable.size());
+                    tokensList.push_back(token);
+                    insertSymbolInTable(token);
+                    lexeme = "";
+                    return token;
+                }
+                break;
+                
+            case 3: {
+                // '+' (adição)
+                Token token("PLUS", lexeme, "PLUS", tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+                break;
+            }
+                
+            case 4: {
+                Token token("MINUS", lexeme, "MINUS", tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+                break;
+            }
+                
+            case 5: {
+                Token token("DIV", lexeme, "DIV", tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+                break;
+            }
+        }
+    }
+}
+
+optional<Token> getNumberLexeme() {
+    lexeme = "";
+    int state = 1;
+    char c;
+    
+    // Guarda posições para possível rollback
+    int savedStart = startLexeme;
+    int savedNext = nextPosLexeme;
+    int savedLine = fileLine;
+    int savedCol = fileColumn;
+    int savedTokenLine = tokenStartLine;
+    int savedTokenCol = tokenStartColumn;
+
+    while(true) {
+        switch(state) {
+            case 1: // Estado inicial - primeiro dígito
+                c = getNext();
+                if(isdigit(c)) {
+                    if(c == '0') {
+                        state = 2; // Zero como primeiro dígito
+                    } else {
+                        state = 3; // Dígito de 1-9
+                    }
+                } else if(c == '.') {
+                    state = 4; // Ponto decimal sem dígito antes
+                } else {
+                    // Rollback
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 2: // Zero como primeiro dígito
+                c = getNextForLookahead();
+                if(c == '.') {
+                    getNext(); // Consome o ponto
+                    state = 6; // Vai para parte fracionária
+                } else if(c == 'E' || c == 'e') {
+                    getNext(); // Consome o E
+                    state = 8; // Vai para expoente
+                } else if(isdigit(c)) {
+                    // Zero seguido de dígito - não é válido (exceto em ponto flutuante)
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                } else {
+                    state = 10; // Apenas "0" - inteiro válido
+                }
+                break;
+                
+            case 3: // Dígitos inteiros (1-9 seguido de mais dígitos)
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    // Continua no estado 3
+                } else if(c == '.') {
+                    getNext();
+                    state = 6; // Vai para parte fracionária
+                } else if(c == 'E' || c == 'e') {
+                    getNext();
+                    state = 8; // Vai para expoente
+                } else {
+                    state = 10; // Fim do inteiro
+                }
+                break;
+                
+            case 4: // Ponto decimal sem dígito antes (ex: .5)
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    state = 5; // Dígitos após ponto inicial
+                } else {
+                    // Ponto sozinho não é número válido
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 5: // Parte fracionária (após ponto inicial)
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    // Continua no estado 5
+                } else if(c == 'E' || c == 'e') {
+                    getNext();
+                    state = 8; // Vai para expoente
+                } else {
+                    state = 11; // Fim do float (ex: .123)
+                }
+                break;
+                
+            case 6: // Após ponto decimal em número com parte inteira (ex: 123.)
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    state = 7; // Dígitos após ponto
+                } else {
+                    state = 11; // Fim do float (ex: 123.)
+                }
+                break;
+                
+            case 7: // Dígitos após ponto decimal (ex: 123.45)
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    // Continua no estado 7
+                } else if(c == 'E' || c == 'e') {
+                    getNext();
+                    state = 8; // Vai para expoente
+                } else {
+                    state = 11; // Fim do float sem expoente
+                }
+                break;
+                
+            case 8: // Após 'E' ou 'e' (início do expoente)
+                c = getNextForLookahead();
+                if(c == '+' || c == '-') {
+                    getNext(); // Consome sinal
+                    state = 9; // Vai para dígitos do expoente
+                } else if(isdigit(c)) {
+                    getNext();
+                    state = 9; // Dígitos do expoente sem sinal
+                } else {
+                    // 'E' ou 'e' sem dígitos após - inválido
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 9: // Dígitos do expoente
+                c = getNextForLookahead();
+                if(isdigit(c)) {
+                    getNext();
+                    // Continua no estado 9
+                } else {
+                    state = 11; // Fim do float com notação científica
+                }
+                break;
+                
+            case 10: { // Estado final para INT
+                // Verifica se o valor está no intervalo permitido (0-32767)
+                try {
+                    int intValue = stoi(lexeme);
+                    if(intValue < 0 || intValue > 32767) {
+                        cerr << "Erro: inteiro fora do intervalo permitido (0-32767): " << lexeme 
+                             << " na linha " << tokenStartLine << ", coluna " << tokenStartColumn << endl;
+                        nextPosLexeme = savedNext;
+                        fileLine = savedLine;
+                        fileColumn = savedCol;
+                        startLexeme = savedStart;
+                        tokenStartLine = savedTokenLine;
+                        tokenStartColumn = savedTokenCol;
+                        lexeme = "";
+                        return nullopt;
+                    }
+                    
+                    Token token("INT_CONST", lexeme, "INT", tokenStartLine, tokenStartColumn, symbolTable.size());
+                    tokensList.push_back(token);
+                    insertSymbolInTable(token);
+                    lexeme = "";
+                    return token;
+                } catch(const exception& e) {
+                    cerr << "Erro ao converter inteiro: " << lexeme << endl;
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+            }
+                
+            case 11: { // Estado final para FLOAT
+                // Verifica se é um float válido
+                try {
+                    // Tenta converter para float para validar
+                    float floatValue = stof(lexeme);
+                    
+                    Token token("FLOAT_CONST", lexeme, "FLOAT", tokenStartLine, tokenStartColumn, symbolTable.size());
+                    tokensList.push_back(token);
+                    insertSymbolInTable(token);
+                    lexeme = "";
+                    return token;
+                } catch(const exception& e) {
+                    cerr << "Erro ao converter float: " << lexeme 
+                         << " na linha " << tokenStartLine << ", coluna " << tokenStartColumn << endl;
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+            }
+                
+            default:
+                nextPosLexeme = savedNext;
+                fileLine = savedLine;
+                fileColumn = savedCol;
+                startLexeme = savedStart;
+                tokenStartLine = savedTokenLine;
+                tokenStartColumn = savedTokenCol;
+                lexeme = "";
+                return nullopt;
+        }
+    }
+}
+
+optional<Token> getCharConstLexeme() {
+    lexeme = "";
+    int state = 1;
+    char c;
+    
+    // Guarda posições para possível rollback
+    int savedNext = nextPosLexeme;
+    int savedLine = fileLine;
+    int savedCol = fileColumn;
+    int savedStart = startLexeme;
+    int savedTokenLine = tokenStartLine;
+    int savedTokenCol = tokenStartColumn;
+
+    while(true) {
+        switch(state) {
+            case 1: // Espera a primeira aspas
+                c = getNext();
+                if(c == '\'') {
+                    state = 2;
+                } else {
+                    // Rollback
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 2: // Dentro das aspas - espera um caractere
+                c = getNext();
+                if(c == '\'') {
+                    // Aspas vazias '' - inválido
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                } else if(c == '\\') {
+                    // Caractere de escape
+                    state = 3;
+                } else if(c == '\n' || c == '\0') {
+                    // Fim de linha ou arquivo sem fechar aspas - erro
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                } else {
+                    // Caractere normal
+                    state = 4;
+                }
+                break;
+                
+            case 3: // Após barra invertida - caractere de escape
+                c = getNext();
+                if(c == 'n' || c == 't' || c == 'r' || c == '\\' || c == '\'' || c == '"') {
+                    // Sequências de escape válidas: \n, \t, \r, \\, \', \"
+                    state = 4;
+                } else {
+                    // Sequência de escape inválida
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 4: // Espera a aspas de fechamento
+                c = getNext();
+                if(c == '\'') {
+                    state = 5; // Aspas de fechamento encontrada
+                } else {
+                    // Mais de um caractere dentro das aspas - inválido para char
+                    nextPosLexeme = savedNext;
+                    fileLine = savedLine;
+                    fileColumn = savedCol;
+                    startLexeme = savedStart;
+                    tokenStartLine = savedTokenLine;
+                    tokenStartColumn = savedTokenCol;
+                    lexeme = "";
+                    return nullopt;
+                }
+                break;
+                
+            case 5: { // Estado final - char válido
+                // O lexeme completo inclui as aspas: ex: 'A' ou '\n'
+                // Mas podemos extrair apenas o valor interno para a tabela de símbolos
+                string value = lexeme.substr(1, lexeme.length() - 2); // Remove as aspas
+                
+                Token token("CHAR_CONST", lexeme, "CHAR", tokenStartLine, tokenStartColumn, symbolTable.size());
+                tokensList.push_back(token);
+                insertSymbolInTable(token);
+                lexeme = "";
+                return token;
+                break;
+            }
+                
+            default:
+                // Rollback em caso de erro
+                nextPosLexeme = savedNext;
+                fileLine = savedLine;
+                fileColumn = savedCol;
+                startLexeme = savedStart;
+                tokenStartLine = savedTokenLine;
+                tokenStartColumn = savedTokenCol;
+                lexeme = "";
+                return nullopt;
+        }
+    }
+}
+
+void skipWhitespaceAndComments() {
+    while (nextPosLexeme < buffer.length()) {
+        char c = buffer[nextPosLexeme];
+
+        if (isspace(c)) {
+            if (c == '\n') {
+                fileLine++;
+                fileColumn = 1;
+            } else {
+                fileColumn++;
+            }
+            nextPosLexeme++;
+            continue;
+        }
+
+        if (c == '%') {
+            nextPosLexeme++;  // consome o %
+            while (nextPosLexeme < buffer.length()) {
+                c = buffer[nextPosLexeme];
+                if (c == '%') {
+                    nextPosLexeme++;  // consome o % final
+                    break;
+                }
+                if (c == '\n') {
+                    fileLine++;
+                    fileColumn = 1;
+                } else {
+                    fileColumn++;
+                }
+                nextPosLexeme++;
+            }
+            continue;
+        }
+
+        // não é espaço nem comentário → sai
+        break;
+    }
+}
+
 void lexer() {
 
     while(nextPosLexeme < buffer.size()) {
+        skipWhitespaceAndComments();
+        if(nextPosLexeme >= buffer.size()) break;
+        
+        startLexeme = nextPosLexeme;
+        tokenStartLine = fileLine;
+        tokenStartColumn = fileColumn;
+        
         token = getIfLexeme();
-        if(token == nullopt) {
-             token = getVoidLexeme();
-             if(token == nullopt) {
-                  token = getIntLexeme();
-              } if(token == nullopt) {
-                  token = getCharLexeme();
-              } if(token == nullopt) {
-                 token = getFloatLexeme();
-              } if(token == nullopt) {
-                 token = getMainLexeme();
-              } if(token == nullopt) {
-                token = getThenLexeme();
-             } if(token == nullopt) {
-                token = getElsifLexeme();
-             } if(token == nullopt) {
-                token = getElseLexeme();
-             } if(token == nullopt) {
-                token = getForLexeme();
-             } if(token == nullopt) {
-                token = getIdLexeme();
-             } 
-        }         
+        if(!token.has_value()) token = getVoidLexeme();
+        if(!token.has_value()) token = getIntLexeme();
+        if(!token.has_value()) token = getCharLexeme();
+        if(!token.has_value()) token = getFloatLexeme();
+        if(!token.has_value()) token = getMainLexeme();
+        if(!token.has_value()) token = getThenLexeme();
+        if(!token.has_value()) token = getElsifLexeme();
+        if(!token.has_value()) token = getElseLexeme();
+        if(!token.has_value()) token = getForLexeme();
+        if(!token.has_value()) token = getOpenParenthesis();
+        if(!token.has_value()) token = getCloseParenthesis();
+        if(!token.has_value()) token = getCommaLexeme();
+        if(!token.has_value()) token = getassignmentLexeme();
+        if(!token.has_value()) token = getMathOperatorLexeme();
+        if(!token.has_value()) token = getNumberLexeme();
+        if(!token.has_value()) token = getCharConstLexeme();
+        if(!token.has_value()) token = getRelopLexeme();
+        
+        if(!token.has_value()) token = getIdLexeme();
+        
+        if(!token.has_value()) {
+            cerr << "Erro léxico na linha " << fileLine 
+                 << ", coluna " << fileColumn 
+                 << ": caractere inválido '" 
+                 << buffer[nextPosLexeme] << "'" << endl;
+            nextPosLexeme++;
+            fileColumn++;
+        }
     }
-
 }
 
 int main() {
