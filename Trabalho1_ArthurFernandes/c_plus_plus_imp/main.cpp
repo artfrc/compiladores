@@ -851,6 +851,129 @@ optional<Token> getForLexeme() {
     }
 }
 
+optional<Token> getDoLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 'd'){
+                state = 2;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'o'){
+                state = 3;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
+                return nullopt;
+            } else { // é DO mesmo
+                Token token("DO", "DO", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                lexeme = "";
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
+optional<Token> getWhileLexeme() {
+
+    lexeme = "";
+
+    int state = 1;
+    char c;
+
+    while(true) {
+        switch (state) {
+        case 1:
+            c = getNext();
+            if(c == 'w'){
+                state = 2;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 2:
+            c = getNext();
+            if(c == 'h'){
+                state = 3;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 3:
+            c = getNext();
+            if(c == 'i'){
+                state = 4;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 4:
+            c = getNext();
+            if(c == 'l'){
+                state = 5;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 5:
+            c = getNext();
+            if(c == 'e'){
+                state = 6;
+            } else {
+                FailedLexeme();
+                return nullopt;
+            }
+            break;
+        case 6:
+            c = getNextForLookahead();
+            if(isalpha(c) || isdigit(c) || c == '_') { // é um ID!
+                nextPosLexeme = startLexeme;
+                fileColumn = tokenStartColumn;
+                return nullopt;
+            } else { // é FOR mesmo
+                Token token("FOR", "FOR", symbolTable.size());
+                insertSymbolInTable(token);
+                tokensList.push_back(token);
+                lexeme = "";
+                return token;
+
+            }
+        
+        default:
+            break;
+        }
+    }
+}
+
 optional<Token> getRelopLexeme() {
     lexeme = "";
 
@@ -1690,6 +1813,8 @@ void lexer() {
         if(!token.has_value()) token = getElsifLexeme();
         if(!token.has_value()) token = getElseLexeme();
         if(!token.has_value()) token = getForLexeme();
+        if(!token.has_value()) token = getDoLexeme();
+        if(!token.has_value()) token = getWhileLexeme();
         if(!token.has_value()) token = getOpenParenthesis();
         if(!token.has_value()) token = getCloseParenthesis();
         if(!token.has_value()) token = getCommaLexeme();

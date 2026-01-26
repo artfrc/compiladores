@@ -28,6 +28,8 @@ char
 float
 main
 for
+do
+while
 % identificadores %
 soma
 total
